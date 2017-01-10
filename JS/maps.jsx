@@ -12,9 +12,10 @@ var map = new google.maps.Map(
 	}
 );
 
-a function that places a  marker at a city location 
+var infoWindow = new google.maps.InfoWindow({})
+// a function that places a  marker at a city location 
 function createMarker(city){
-	var icon = 'http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=%E2%80%A2%7CFE7569'
+	var icon = 'http://i.imgur.com/eQ3pSuK.png'
 	var cityLL = {
 		lat: city.lat, 
 		lng: city.lon
@@ -24,9 +25,12 @@ function createMarker(city){
 		position: cityLL,
 		map: map,
 		title: city.city,
-		icon: icons
+		icon: icon
 	})
-
+	google.maps.event.addListener(marker, 'click', function(event){
+		infoWindow.setContent(`<h2 ${city.city} </h2> <div> <p>${city.state} </p></div>`);
+		infoWindow.open(map, marker);
+	})
 }
 
 // ************************REACT PORTION ***********************************************
@@ -41,18 +45,43 @@ function GoogleCity(props){
 }
 
 var Cities = React.createClass({
-	
+	getInitialState: function(){
+		return(
+			{
+				currCities: this.props.cities
+			}
+		)
+	},
+
+	handleInputChange: function(event){
+		var newFilterValue = event.target.value; 
+		var filteredCitiesArray = [];
+		this.props.cities.map(function(currCity, index){
+			if(currCity.city.indexOf(newFilterValue) !== -1){
+				//hit - it is in the word 
+				filteredCitiesArray.push(currCity);
+			}
+		});
+		this.setState({
+			currCities: filteredCitiesArray
+		})
+	},
 	
 	render: function(){
 		var cityRows = [];
 
-		this.props.cities.map(function(currentCity, index){
+		this.state.currCities.map(function(currentCity, index){
 			createMarker(currentCity)
 			cityRows.push(<GoogleCity cityObject={currentCity} key={index} />
 		)})
 
+
 		return(
 			<div> 
+				<form onSubmit={this.updateMarkers}>
+					<input type="text" onChange={this.handleInputChange} />
+					<input type="submit" value="Update Markers" />
+				</form>	
 				<table>
 					<thead>
 						<tr>

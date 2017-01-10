@@ -1,4 +1,5 @@
 #map{
+	margin-top: 20px;
 	height:  100vh;
 	width:  50%;
 	float: left;
@@ -9,3 +10,9 @@
 	float: left;
 }
 
+table td{
+	border:  solid black 1px;
+}
+table{
+	margin-left: 50px;
+}
